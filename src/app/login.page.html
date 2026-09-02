@@ -1,0 +1,25 @@
+<main class="login-wrap d-flex align-items-center">
+  <section class="container py-2 py-lg-3">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-5">
+        <article class="card shadow-sm border-0 retro-login-card">
+          <div class="card-body p-4 p-lg-5 text-center">
+            <img class="balatro-logo mb-3" src="brand/balatro-logo.png" alt="Balatro" />
+            <img class="balatro-dev-logo mb-3" src="brand/balatro-developer-logo-colour.png" alt="Balatro Developer" />
+
+            <h1 class="h3 mb-2 text-dark">{{ 'LOGIN.TITLE' | translate }}</h1>
+            <p class="text-secondary mb-4">{{ 'LOGIN.SUBTITLE' | translate }}</p>
+
+            @if (errorMessage()) {
+              <div class="alert alert-warning text-start mb-3" role="alert">{{ errorMessage() }}</div>
+            }
+
+            <button class="btn btn-primary w-100 retro-google-btn" type="button" (click)="signIn()">
+              <i class="fa-brands fa-google me-2"></i>{{ 'LOGIN.GOOGLE' | translate }}
+            </button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>

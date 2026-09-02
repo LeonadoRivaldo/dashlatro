@@ -1,0 +1,4 @@
+{"run_id":"2026-09-02T10:00:00Z_red_white","event_type":"run_started","timestamp":"2026-09-02T10:00:00Z","deck":"Red Deck","stake":"white"}
+{"run_id":"2026-09-02T10:00:00Z_red_white","event_type":"run_finished","timestamp":"2026-09-02T10:12:42Z","deck":"Red Deck","stake":"white","result":"win"}
+{"run_id":"2026-09-02T10:20:10Z_ghost_blue","event_type":"run_started","timestamp":"2026-09-02T10:20:10Z","deck":"Ghost Deck","stake":"blue"}
+{"run_id":"2026-09-02T10:20:10Z_ghost_blue","event_type":"run_finished","timestamp":"2026-09-02T10:31:07Z","deck":"Ghost Deck","stake":"blue","result":"loss"}

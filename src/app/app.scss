@@ -1,0 +1,129 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.navbar-brand {
+  letter-spacing: 0.06em;
+  color: var(--dash-gold) !important;
+}
+
+.lang-dropdown {
+  position: relative;
+}
+
+.lang-toggle,
+.lang-option {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--dash-border-subtle);
+  color: var(--dash-text);
+  background: var(--dash-bg-accent);
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 80ms ease;
+}
+
+.lang-toggle:hover,
+.lang-option:hover {
+  background: var(--dash-bg-primary);
+  border-color: var(--dash-onyx-blue);
+  transform: translateY(-1px);
+}
+
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--dash-bg-accent);
+  border: 1px solid var(--dash-border-subtle);
+  border-radius: 10px;
+  padding: 0.35rem;
+  display: flex;
+  gap: 0.25rem;
+  z-index: 1050;
+  box-shadow: none;
+}
+
+.flag-icon {
+  width: 20px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.app-shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+:host ::ng-deep .navbar {
+  background: var(--dash-bg-primary) !important;
+  border-bottom: 2px solid var(--dash-border-subtle) !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .navbar .btn {
+  border-color: var(--dash-border-subtle);
+  background: var(--dash-bg-accent);
+  color: var(--dash-text);
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 80ms ease;
+}
+
+:host ::ng-deep .navbar .btn:hover {
+  background: var(--dash-onyx-blue);
+  border-color: var(--dash-onyx-blue);
+  color: var(--dash-white);
+  transform: translateY(-1px);
+}
+
+.app-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-footer {
+  border-top: 2px solid var(--dash-border-subtle);
+  background: var(--dash-bg-primary);
+  padding: 0.4rem 0;
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.footer-content small {
+  color: var(--dash-text-muted);
+  line-height: 1.2;
+}
+
+.footer-content a {
+  white-space: nowrap;
+  text-decoration: none;
+  font-weight: 800;
+  color: var(--dash-teal);
+}
+
+@media (max-width: 991px) {
+  .app-shell {
+    overflow: auto;
+  }
+
+  .app-content {
+    overflow: visible;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+

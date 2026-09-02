@@ -1,0 +1,58 @@
+{
+  "LANGUAGE": {
+    "SELECT": "Selecionar idioma"
+  },
+  "AUTH": {
+    "LOGOUT": "Sair"
+  },
+  "FOOTER": {
+    "DISCLAIMER": "Copyright © {{year}} Dashlatro. Balatro e recursos relacionados pertencem aos seus respectivos donos. Este e um projeto de fa e nao possui afiliacao ou endosso de Playstack/LocalThunk.",
+    "OFFICIAL_SITE": "Site oficial"
+  },
+  "LOGIN": {
+    "TITLE": "Login",
+    "SUBTITLE": "Entre com Google para acessar seu dashboard.",
+    "GOOGLE": "Entrar com Google"
+  },
+  "DASHBOARD": {
+    "RUNS": "runs",
+    "WIN_RATE": {
+      "TITLE": "Taxa de vitoria",
+      "WINS": "Vitorias",
+      "LOSSES": "Derrotas",
+      "MOST_PLAYED": "Mais jogado",
+      "EMPTY": "Registre partidas para revelar o deck mais jogado."
+    },
+    "RANKING": {
+      "TITLE": "Ranking Deck + Stake",
+      "TOP": "Top 8",
+      "DECK": "Deck",
+      "STAKE": "Stake",
+      "EMPTY": "Ainda sem dados para ranking."
+    },
+    "RANDOMIZER": {
+      "TITLE": "Randomizer Deck + Stake",
+      "DRAWN_DECK": "Deck sorteado",
+      "DRAW": "Sortear",
+      "SAVE_CURRENT": "Salvar no Current Playing",
+      "NOTES_LABEL": "Notas para salvar",
+      "NOTES_PLACEHOLDER": "Exemplo: build de jokers, plano de boss blind"
+    },
+    "IMPORT": {
+      "TITLE": "Importar dump do mod",
+      "DESCRIPTION": "Importe um arquivo JSONL gerado pela camada de mod do Balatro.",
+      "BUTTON": "Importar arquivo de dump",
+      "ERRORS_TITLE": "Avisos de parsing"
+    },
+    "CURRENT": {
+      "TITLE": "Current Playing",
+      "READ_ONLY": "Somente leitura",
+      "CURRENT_DECK": "Deck atual",
+      "EMPTY": "Vazio. Salve um randomizer para comecar.",
+      "SAVED_NOTES": "Notas salvas",
+      "EMPTY_NOTES": "Sem notas salvas ainda.",
+      "WIN": "Registrar Win",
+      "LOSS": "Registrar Loss"
+    }
+  }
+}

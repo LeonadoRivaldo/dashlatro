@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dashlatro Mod JSONL Event",
+  "description": "One JSON object per line in the dump file.",
+  "type": "object",
+  "required": [
+    "run_id",
+    "event_type",
+    "timestamp",
+    "deck",
+    "stake"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["run_started", "run_finished"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deck": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stake": {
+      "type": "string",
+      "enum": [
+        "white",
+        "red",
+        "green",
+        "black",
+        "blue",
+        "purple",
+        "orange",
+        "gold"
+      ]
+    },
+    "result": {
+      "type": "string",
+      "enum": ["win", "loss"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "run_finished"
+          }
+        }
+      },
+      "then": {
+        "required": ["result"]
+      }
+    }
+  ],
+  "additionalProperties": true
+}

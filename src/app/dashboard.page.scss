@@ -1,0 +1,143 @@
+:host {
+  display: block;
+}
+
+.dashboard-wrap {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.dashboard-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.dashboard-wrap .container {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-wrap .row {
+  flex: 1 1 auto;
+}
+
+.dashboard-wrap .card-body {
+  padding: 0.9rem !important;
+}
+
+.dashboard-wrap .card {
+  background: var(--dash-bg-accent);
+  border: 1px solid var(--dash-border-subtle) !important;
+  box-shadow: none !important;
+}
+
+.dashboard-wrap .badge {
+  border: 1px solid var(--dash-border-subtle);
+  background: var(--dash-bg-primary);
+  color: var(--dash-text);
+}
+
+.dashboard-wrap .text-dark {
+  color: var(--dash-text) !important;
+}
+
+.dashboard-wrap .text-secondary {
+  color: var(--dash-text-muted) !important;
+}
+
+.metric {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  color: var(--dash-gold);
+  line-height: 1;
+}
+
+.mini-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.mini-stat-card {
+  background: var(--dash-bg-primary);
+  border: 1px solid var(--dash-border-subtle);
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+}
+
+.mini-stat-label {
+  color: var(--dash-text-subtle);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mini-stat-value {
+  color: var(--dash-text);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.mini-stat-value--streak {
+  color: var(--dash-gold);
+}
+
+.rng-box {
+  border: 1px solid var(--dash-border-subtle);
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: var(--dash-bg-primary);
+}
+
+.stake-icon {
+  object-fit: contain;
+  vertical-align: text-bottom;
+}
+
+.deck-icon {
+  object-fit: contain;
+  vertical-align: text-bottom;
+}
+
+.deck-stake-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.ranking-scroll {
+  max-height: clamp(180px, 37vh, 50vh);
+  overflow-y: auto;
+}
+
+.ranking-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.ranking-scroll::-webkit-scrollbar-thumb {
+  background: var(--dash-onyx-blue);
+  border-radius: 10px;
+  border: 2px solid var(--dash-bg-primary);
+}
+
+.deck-hero-icon {
+  width: clamp(72px, 16vw, 112px);
+  height: clamp(72px, 16vw, 112px);
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 991px) {
+  .dashboard-wrap {
+    height: auto;
+    overflow: visible;
+  }
+
+  .mini-stats {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,100 @@
+@use 'bootstrap/scss/bootstrap';
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@500;700;800&display=swap');
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+:root {
+	--retro-ink: #1f1538;
+	--retro-paper: #fff7d1;
+	--retro-lime: #7dff6f;
+	--retro-cyan: #59f0ff;
+	--retro-gold: #ffd65a;
+	--retro-pink: #ff6d9f;
+	--retro-orange: #ff9f43;
+
+	--dash-blue: rgba(0, 156, 253, 1);
+	--dash-red: rgba(253, 95, 85, 1);
+	--dash-white: rgba(255, 255, 255, 1);
+	--dash-orange: rgba(228, 124, 76, 1);
+	--dash-green: rgba(85, 163, 131, 1);
+	--dash-purple: rgba(138, 113, 225, 1);
+	--dash-grey: rgba(79, 99, 103, 1);
+	--dash-black: rgba(0, 0, 0, 1);
+	--dash-gold: rgba(242, 194, 85, 1);
+	--dash-score-red-shadow: rgba(150, 45, 37, 1);
+	--dash-bloodstone-shadow: rgba(184, 61, 51, 1);
+	--dash-onyx-blue-shadow: rgba(0, 87, 163, 1);
+	--dash-subhead: rgba(69, 83, 83, 1);
+	--dash-score-red: rgba(227, 71, 59, 1);
+	--dash-bloodstone-red: rgba(253, 95, 85, 1);
+	--dash-onyx-blue: rgba(0, 156, 253, 1);
+	--dash-bg-accent: rgba(53, 80, 84, 1);
+	--dash-bg-primary: rgba(30, 45, 45, 1);
+	--dash-money: rgba(219, 159, 62, 1);
+	--dash-teal: rgba(38, 186, 176, 1);
+	--dash-text: #dde4e8;
+	--dash-text-muted: #c8cdd4;
+	--dash-text-subtle: #888888;
+	--dash-border-subtle: #3a3f48;
+	--dash-shadow-soft: rgba(0, 0, 0, 0.4);
+	--dash-shadow-text: rgba(0, 0, 0, 0.5);
+	--dash-overlay-dark: rgba(10, 12, 20, 0.6);
+	--dash-overlay-panel: rgba(10, 15, 30, 0.85);
+	--dash-grid-line: rgba(255, 255, 255, 0.2);
+	--avatar-bg: #ffffff;
+	--hud-panel: rgba(38, 49, 54, 1);
+	--hud-panel-inset: rgba(22, 29, 33, 1);
+	--hud-blind-panel: rgba(23, 55, 66, 1);
+	--hud-edge: rgba(0, 156, 253, 0.55);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	height: 100%;
+	font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background:
+		radial-gradient(
+      1200px 500px at 0% -10%,
+      rgba(255, 109, 159, 0.28),
+      transparent 60%),
+    radial-gradient(
+      900px 500px at 100% 0%,
+      rgba(89, 240, 255, 0.22),
+      transparent 60%),
+		repeating-linear-gradient(
+			0deg,
+			rgba(255, 255, 255, 0.06) 0,
+			rgba(255, 255, 255, 0.06) 1px,
+			transparent 1px,
+			transparent 4px
+		),
+		linear-gradient(180deg, #261c49 0%, #1a1233 100%);
+}
+
+body {
+	color: var(--retro-paper);
+	overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+.navbar-brand {
+	font-family: 'Press Start 2P', monospace;
+	letter-spacing: 0.04em;
+}
+
+app-root {
+	display: block;
+	height: 100%;
+}
+
+@media (max-width: 991px) {
+	body {
+		overflow: auto;
+	}
+}

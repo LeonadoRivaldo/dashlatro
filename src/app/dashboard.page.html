@@ -1,0 +1,172 @@
+<main class="dashboard-wrap">
+  <section class="container h-100 py-2 py-lg-3">
+    @if (errorMessage()) {
+      <div class="alert alert-warning mb-4" role="alert">{{ errorMessage() }}</div>
+    }
+
+    <div class="row g-3 h-100">
+      <div class="col-12 col-xl-6">
+        <section class="card shadow-sm border-0 h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0 text-dark">{{ 'DASHBOARD.WIN_RATE.TITLE' | translate }}</h2>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge text-bg-secondary">{{ totalRuns() }} {{ 'DASHBOARD.RUNS' | translate }}</span>
+                <app-button variant="danger" size="xs" [lowEmphasis]="true" [disabled]="isBusy()" (click)="resetStats()">
+                  Reset
+                </app-button>
+              </div>
+            </div>
+
+            <div class="metric mb-2">{{ winRate() | number:'1.0-1' }}%</div>
+            <div class="mini-stats mb-3">
+              <article class="mini-stat-card">
+                <p class="mini-stat-label mb-1">Wins</p>
+                <p class="mini-stat-value mb-0">{{ wins() }}</p>
+              </article>
+              <article class="mini-stat-card">
+                <p class="mini-stat-label mb-1">Losses</p>
+                <p class="mini-stat-value mb-0">{{ losses() }}</p>
+              </article>
+              <article class="mini-stat-card">
+                <p class="mini-stat-label mb-1">Win streak (best)</p>
+                <p class="mini-stat-value mini-stat-value--streak mb-0">{{ winStreakCurrent() }} ({{ winStreakBest() }})</p>
+              </article>
+            </div>
+
+            @if (mostPlayed()) {
+              <p class="mb-0 text-dark d-flex align-items-center flex-wrap gap-1">
+                <span>{{ 'DASHBOARD.WIN_RATE.MOST_PLAYED' | translate }}:</span>
+                <img
+                  class="deck-icon"
+                  [src]="deckImage(mostPlayed()!.deck)"
+                  [alt]="mostPlayed()!.deck"
+                  width="20"
+                  height="20"
+                />
+                <strong>{{ mostPlayed()!.deck }}</strong>
+                <span>/ {{ stakeLabel(mostPlayed()!.stake) }}</span>
+              </p>
+            } @else {
+              <p class="mb-0 text-secondary">{{ 'DASHBOARD.WIN_RATE.EMPTY' | translate }}</p>
+            }
+          </div>
+        </section>
+      </div>
+      <div class="col-12 col-xl-6">
+        <section class="card shadow-sm border-0 h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0 text-dark">{{ hasCurrentPlaying() ? ('DASHBOARD.CURRENT.TITLE' | translate) : ('DASHBOARD.RANDOMIZER.TITLE' | translate) }}</h2>
+              @if (!hasCurrentPlaying()) {
+                <span class="badge text-bg-secondary">RNG</span>
+              }
+            </div>
+
+            <div class="rng-box mb-3">
+              <p class="mb-1 text-secondary">{{ hasCurrentPlaying() ? ('DASHBOARD.CURRENT.CURRENT_DECK' | translate) : ('DASHBOARD.RANDOMIZER.DRAWN_DECK' | translate) }}</p>
+              @if (hasCurrentPlaying()) {
+                <div class="deck-stake-row">
+                  <img
+                    class="deck-hero-icon"
+                    [src]="deckImage(activeDeck())"
+                    [alt]="activeDeck()"
+                  />
+                  <div>
+                    <h3 class="h4 mb-1 text-dark">{{ activeDeck() }}</h3>
+                    <p class="mb-0 text-secondary d-flex align-items-center">
+                      <img
+                        class="stake-icon"
+                        [src]="stakeImage(activeStake()!)"
+                        [alt]="stakeLabel(activeStake()!)"
+                        width="20"
+                        height="20"
+                      />
+                      <span class="ms-2">{{ stakeLabel(activeStake()!) }}</span>
+                    </p>
+                  </div>
+                </div>
+              } @else {
+                <h3 class="h6 mb-0 text-secondary">{{ 'DASHBOARD.CURRENT.EMPTY' | translate }}</h3>
+              }
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+              @if (hasCurrentPlaying()) {
+                <app-button variant="success" [disabled]="isBusy()" (click)="registerResult('win')">{{ 'DASHBOARD.CURRENT.WIN' | translate }}</app-button>
+                <app-button variant="danger" [disabled]="isBusy()" (click)="registerResult('loss')">{{ 'DASHBOARD.CURRENT.LOSS' | translate }}</app-button>
+              } @else {
+                <app-button variant="primary" [disabled]="isBusy()" (click)="drawRandomRun()">{{ 'DASHBOARD.RANDOMIZER.DRAW' | translate }}</app-button>
+              }
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-12 col-xl-12">
+        <section class="card shadow-sm border-0 h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0 text-dark">{{ 'DASHBOARD.RANKING.TITLE' | translate }}</h2>
+              <span class="badge text-bg-secondary">{{ 'DASHBOARD.RANKING.TOP' | translate }}</span>
+            </div>
+
+            @if (ranking().length) {
+              <div class="table-responsive ranking-scroll">
+                <table class="table table-hover align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>{{ 'DASHBOARD.RANKING.DECK' | translate }}</th>
+                      <th>{{ 'DASHBOARD.RANKING.STAKE' | translate }}</th>
+                      <th>WR</th>
+                      <th>W-L</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of ranking(); track $index) {
+                      <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>
+                          <img
+                            class="deck-icon"
+                            [src]="deckImage(item.deck)"
+                            [alt]="item.deck"
+                            width="20"
+                            height="20"
+                          />
+                          <span class="ms-2">{{ item.deck }}</span>
+                        </td>
+                        <td>
+                          <img
+                            class="stake-icon"
+                            [src]="stakeImage(item.stake)"
+                            [alt]="stakeLabel(item.stake)"
+                            width="20"
+                            height="20"
+                          />
+                          <span class="ms-2">{{ stakeLabel(item.stake) }}</span>
+                        </td>
+                        <td>{{ item.ratio * 100 | number:'1.0-0' }}%</td>
+                        <td>{{ item.wins }}-{{ item.losses }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (hasMoreRanking()) {
+                <div class="mt-3 d-flex justify-content-center">
+                  <app-button variant="neutral" size="sm" (click)="toggleRankingView()">
+                    {{ showAllRanking() ? 'Show less' : 'See all' }}
+                  </app-button>
+                </div>
+              }
+            } @else {
+              <p class="mb-0 text-secondary">{{ 'DASHBOARD.RANKING.EMPTY' | translate }}</p>
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+</main>

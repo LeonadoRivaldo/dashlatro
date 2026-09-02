@@ -1,0 +1,16 @@
+<button
+  class="app-btn"
+  [class.app-btn--primary]="variant === 'primary'"
+  [class.app-btn--success]="variant === 'success'"
+  [class.app-btn--danger]="variant === 'danger'"
+  [class.app-btn--neutral]="variant === 'neutral'"
+  [class.app-btn--xs]="size === 'xs'"
+  [class.app-btn--sm]="size === 'sm'"
+  [class.app-btn--md]="size === 'md'"
+  [class.app-btn--full]="fullWidth"
+  [class.app-btn--low-emphasis]="lowEmphasis"
+  [attr.type]="type"
+  [disabled]="disabled"
+>
+  <ng-content />
+</button>
