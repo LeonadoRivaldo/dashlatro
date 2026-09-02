@@ -29,8 +29,23 @@ export class LoginPage {
     this.errorMessage.set('');
     try {
       await this.authService.signInWithGoogle();
-    } catch {
-      this.errorMessage.set('Nao foi possivel autenticar com Google.');
+    } catch (error: unknown) {
+      const code =
+        typeof error === 'object' && error !== null && 'code' in error
+          ? String((error as { code?: unknown }).code ?? '')
+          : '';
+      const detail =
+        typeof error === 'object' && error !== null && 'message' in error
+          ? String((error as { message?: unknown }).message ?? '')
+          : '';
+
+      if (code) {
+        this.errorMessage.set(`Falha no login: ${code}`);
+      } else if (detail) {
+        this.errorMessage.set(`Falha no login: ${detail}`);
+      } else {
+        this.errorMessage.set('Nao foi possivel autenticar com Google.');
+      }
     }
   }
 }

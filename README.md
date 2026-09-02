@@ -1,59 +1,127 @@
 # Dashlatro
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.9.
+Aplicação web para acompanhar runs de Balatro com foco em:
 
-## Development server
+- geração de run atual (deck + stake)
+- registro de vitória e derrota
+- histórico por usuário
+- win rate, ranking e win streak (atual e melhor)
+- sincronização opcional de eventos vindos do mod
 
-To start a local development server, run:
+## Stack
 
-```bash
-ng serve
-```
+- Angular 21 (standalone components + signals)
+- AngularFire + Firebase Firestore
+- Bootstrap 5 + SCSS
+- ngx-translate para i18n
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Funcionalidades
 
-## Code scaffolding
+- Login com Google
+- Card de Win Rate com mini métricas de Wins, Losses e Win Streak
+- Controle de run atual
+- Botões de resultado com comportamento visual unificado
+- Ranking por combinação deck/stake
+- Botão de reset de stats com confirmação do navegador
+- Importação de eventos do mod (inbox) com deduplicação por runId
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Requisitos
 
-```bash
-ng generate component component-name
-```
+- Node.js 22+
+- npm 11+
+- Projeto Firebase configurado
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Variáveis de ambiente
 
-```bash
-ng generate --help
-```
+Edite o arquivo src/environments/environment.ts com os dados do seu projeto Firebase.
 
-## Building
+Campos esperados:
 
-To build the project run:
+- apiKey
+- authDomain
+- projectId
+- storageBucket
+- messagingSenderId
+- appId
 
-```bash
-ng build
-```
+## Rodando localmente
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+1. Instale as dependências:
 
-## Running unit tests
+	 npm ci
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+2. Inicie o ambiente de desenvolvimento:
 
-```bash
-ng test
-```
+	 npm run start
 
-## Running end-to-end tests
+3. Abra no navegador:
 
-For end-to-end (e2e) testing, run:
+	 http://localhost:4200/
 
-```bash
-ng e2e
-```
+## Scripts úteis
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+- npm run start: sobe o servidor local
+- npm run build: build de produção
+- npm run watch: build em modo watch
+- npm run test: testes
 
-## Additional Resources
+## Estrutura resumida
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- src/app/dashboard.page.*: tela principal e métricas
+- src/app/login.page.*: autenticação
+- src/app/stats.service.ts: persistência de stats e importação de eventos
+- src/app/stats.model.ts: modelos de dados
+- src/app/shared/components/app-button.component.*: botão reutilizável com variantes
+- public/: assets estáticos (brand, decks, flags, stakes, i18n)
+
+## Modelo de stats por usuário
+
+Coleção principal:
+
+- userStats/{uid}
+
+Campos principais:
+
+- history: lista de partidas (deck, stake, result, playedAt)
+- currentPlaying: run atual
+- winStreak:
+	- current
+	- best
+- processedRunIds: controle de deduplicação para eventos de mod
+
+## Deploy no GitHub Pages
+
+Workflow já incluído em:
+
+- .github/workflows/deploy-pages.yml
+
+Como publicar:
+
+1. Faça push para a branch main.
+2. No GitHub, vá em Settings > Pages.
+3. Em Source, selecione GitHub Actions.
+4. Aguarde o job Deploy Dashlatro to GitHub Pages terminar.
+
+URL esperada:
+
+https://leonadorivaldo.github.io/dashlatro/
+
+## Troubleshooting
+
+- Push rejeitado no primeiro envio:
+	- confirme remote, branch e commit inicial
+- Página em branco no Pages:
+	- valide base href de build para /dashlatro/
+- Rotas quebrando no refresh:
+	- confirme geração de 404.html a partir de index.html no workflow
+
+## Roadmap curto
+
+- filtros avançados por deck/stake/data
+- export/import de histórico
+- métricas adicionais por stake
+- ajustes finos de UX mobile
+
+## Licença
+
+Defina a licença que deseja usar (MIT, Apache-2.0, etc.) e adicione o arquivo LICENSE no repositório.
