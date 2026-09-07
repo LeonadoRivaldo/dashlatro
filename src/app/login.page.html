@@ -1,6 +1,7 @@
 <main class="login-wrap d-flex align-items-center">
   <section class="container py-2 py-lg-3">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center gap-3">
+      <!-- Login Card -->
       <div class="col-12 col-md-8 col-lg-5">
         <article class="card shadow-sm border-0 retro-login-card">
           <div class="card-body p-4 p-lg-5 text-center">
@@ -17,6 +18,46 @@
             <button class="btn btn-primary w-100 retro-google-btn" type="button" (click)="signIn()">
               <i class="fa-brands fa-google me-2"></i>{{ 'LOGIN.GOOGLE' | translate }}
             </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Rankings Card -->
+      <div class="col-12 col-md-8 col-lg-5">
+        <article class="card shadow-sm border-0 retro-rankings-card">
+          <div class="card-body p-3 p-lg-4">
+            <h2 class="h5 mb-3 text-center text-dark">Global Rankings</h2>
+
+            @if (isLoadingRankings()) {
+              <div class="text-center text-secondary py-4">
+                <i class="fa-solid fa-spinner fa-spin me-2"></i>Loading...
+              </div>
+            } @else if (rankings().length > 0) {
+              <div class="ranking-table-wrap">
+                <table class="ranking-table">
+                  <thead>
+                    <tr>
+                      <th class="rank-col">#</th>
+                      <th class="uid-col">Player</th>
+                      <th class="wr-col">Win Rate</th>
+                      <th class="streak-col">Streak</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (user of rankings(); track user.uid; let idx = $index) {
+                      <tr>
+                        <td class="rank-col text-center">{{ idx + 1 }}</td>
+                        <td class="uid-col text-truncate">{{ user.displayName }}</td>
+                        <td class="wr-col text-center">{{ user.winRate | number:'1.0-1' }}%</td>
+                        <td class="streak-col text-center">{{ user.currentStreak }}/{{ user.bestStreak }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <div class="text-center text-secondary py-4">No players yet</div>
+            }
           </div>
         </article>
       </div>

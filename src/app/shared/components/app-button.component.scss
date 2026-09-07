@@ -8,8 +8,6 @@
   --btn-border: #1a2f61;
 
   border: 1px solid var(--btn-border);
-  border-top-width: 0 ;
-  border-left-width: 0;
   border-bottom-width: 4px;
   border-right-width: 4px;
   border-radius: 0.5rem;
@@ -19,6 +17,13 @@
   box-shadow: none;
   line-height: 1.2;
   transition: all 110ms ease-out;
+}
+
+@media (max-width: 768px) {
+  .app-btn {
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+  }
 }
 
 .app-btn:hover:not(:disabled) {
@@ -71,6 +76,23 @@
 .app-btn--md {
   padding: 0.42rem 0.86rem;
   font-size: 0.94rem;
+}
+
+@media (max-width: 768px) {
+  .app-btn--xs {
+    padding: 0.15rem 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .app-btn--sm {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .app-btn--md {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
 .app-btn--full {

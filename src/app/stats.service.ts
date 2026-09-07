@@ -11,7 +11,7 @@ import {
   setDoc
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, map } from 'rxjs';
-import { CurrentPlaying, MatchEntry, MatchResult, UserStats, WinStreak } from './stats.model';
+import { CurrentPlaying, MatchEntry, MatchResult, UserStats, UserRanking, WinStreak } from './stats.model';
 import { ModImportResult, ModRunEvent } from './mod-events.model';
 import { normalizeStake } from './stake.utils';
 
@@ -27,7 +27,8 @@ const DEFAULT_STATS: UserStats = {
   winStreak: {
     current: 0,
     best: 0
-  }
+  },
+  rerollsRemaining: 0
 };
 
 const DEFAULT_WIN_STREAK: WinStreak = {
@@ -76,7 +77,8 @@ export class StatsService {
     const created = new BehaviorSubject<UserStats>({
       history: [],
       currentPlaying: { ...DEFAULT_CURRENT_PLAYING },
-      winStreak: { ...DEFAULT_WIN_STREAK }
+      winStreak: { ...DEFAULT_WIN_STREAK },
+      rerollsRemaining: 0
     });
     this.localStore.set(uid, created);
     return created;
@@ -96,6 +98,9 @@ export class StatsService {
 
         const data = value as Partial<UserStats>;
         const currentStake = data.currentPlaying?.stake;
+        const normalizedWinStreak = normalizeWinStreak(data.winStreak);
+        const rerollsRaw = Number(data.rerollsRemaining);
+        const rerollsRemaining = Number.isFinite(rerollsRaw) && rerollsRaw >= 0 ? Math.floor(rerollsRaw) : normalizedWinStreak.best;
         return {
           history: Array.isArray(data.history)
             ? data.history
@@ -113,7 +118,8 @@ export class StatsService {
                 : normalizeStake(currentStake),
             notes: data.currentPlaying?.notes ?? ''
           },
-          winStreak: normalizeWinStreak(data.winStreak),
+          winStreak: normalizedWinStreak,
+          rerollsRemaining,
           processedRunIds: Array.isArray(data.processedRunIds)
             ? data.processedRunIds.filter((id): id is string => typeof id === 'string')
             : [],
@@ -124,7 +130,7 @@ export class StatsService {
     );
   }
 
-  async updateCurrentPlaying(uid: string, payload: CurrentPlaying): Promise<void> {
+  async updateCurrentPlaying(uid: string, payload: CurrentPlaying, displayName?: string): Promise<void> {
     if (!this.firestore) {
       const subject = this.getLocalSubject(uid);
       subject.next({
@@ -135,22 +141,25 @@ export class StatsService {
     }
 
     const ref = doc(this.firestore, 'userStats', uid);
-    await setDoc(
-      ref,
-      {
-        currentPlaying: payload,
-        updatedAt: serverTimestamp(),
-        createdAt: serverTimestamp()
-      },
-      { merge: true }
-    );
+    const data: Record<string, unknown> = {
+      currentPlaying: payload,
+      updatedAt: serverTimestamp(),
+      createdAt: serverTimestamp()
+    };
+    
+    if (displayName) {
+      data['displayName'] = displayName;
+    }
+    
+    await setDoc(ref, data, { merge: true });
   }
 
   async recordResult(
     uid: string,
     deck: string,
     stake: MatchEntry['stake'],
-    result: MatchResult
+    result: MatchResult,
+    displayName?: string
   ): Promise<void> {
     if (!this.firestore) {
       const subject = this.getLocalSubject(uid);
@@ -168,7 +177,8 @@ export class StatsService {
       subject.next({
         ...subject.value,
         history: [nextEntry, ...subject.value.history].slice(0, 500),
-        winStreak: nextWinStreak
+        winStreak: nextWinStreak,
+        rerollsRemaining: nextWinStreak.best
       });
       return;
     }
@@ -189,15 +199,19 @@ export class StatsService {
     const nextHistory = [nextEntry, ...history].slice(0, 500);
     const nextWinStreak = getNextWinStreak(existingWinStreak, result);
 
-    await setDoc(
-      ref,
-      {
-        history: nextHistory,
-        winStreak: nextWinStreak,
-        updatedAt: serverTimestamp(),
-        createdAt: existing?.createdAt ?? serverTimestamp()
-      },
-      { merge: true }
+    const data: Record<string, unknown> = {
+      history: nextHistory,
+      winStreak: nextWinStreak,
+      rerollsRemaining: nextWinStreak.best,
+      updatedAt: serverTimestamp(),
+      createdAt: existing?.createdAt ?? serverTimestamp()
+    };
+    
+    if (displayName) {
+      data['displayName'] = displayName;
+    }
+
+    await setDoc(ref, data, { merge: true }
     );
   }
 
@@ -235,6 +249,7 @@ export class StatsService {
         history: [],
         currentPlaying: { ...DEFAULT_CURRENT_PLAYING },
         winStreak: { ...DEFAULT_WIN_STREAK },
+        rerollsRemaining: 0,
         processedRunIds: []
       });
       return;
@@ -247,7 +262,57 @@ export class StatsService {
         history: [],
         currentPlaying: { ...DEFAULT_CURRENT_PLAYING },
         winStreak: { ...DEFAULT_WIN_STREAK },
+        rerollsRemaining: 0,
         processedRunIds: [],
+        updatedAt: serverTimestamp()
+      },
+      { merge: true }
+    );
+  }
+
+  async rerollCurrentPlaying(uid: string, deckOptions: string[], stakeOptions: string[]): Promise<void> {
+    if (!this.firestore) {
+      const subject = this.getLocalSubject(uid);
+      if (subject.value.rerollsRemaining <= 0) {
+        throw new Error('No rerolls remaining');
+      }
+
+      const nextDeck = deckOptions[Math.floor(Math.random() * deckOptions.length)];
+      const nextStake = stakeOptions[Math.floor(Math.random() * stakeOptions.length)] ?? 'white';
+
+      subject.next({
+        ...subject.value,
+        currentPlaying: {
+          deck: nextDeck,
+          stake: normalizeStake(nextStake),
+          notes: subject.value.currentPlaying.notes
+        },
+        rerollsRemaining: Math.max(0, subject.value.rerollsRemaining - 1)
+      });
+      return;
+    }
+
+    const ref = doc(this.firestore, 'userStats', uid);
+    const snapshot = await getDoc(ref);
+    const existing = snapshot.data() as Partial<UserStats> | undefined;
+    const rerollsRemaining = Number(existing?.rerollsRemaining ?? 0);
+
+    if (rerollsRemaining <= 0) {
+      throw new Error('No rerolls remaining');
+    }
+
+    const nextDeck = deckOptions[Math.floor(Math.random() * deckOptions.length)];
+    const nextStake = stakeOptions[Math.floor(Math.random() * stakeOptions.length)] ?? 'white';
+
+    await setDoc(
+      ref,
+      {
+        currentPlaying: {
+          deck: nextDeck,
+          stake: normalizeStake(nextStake),
+          notes: existing?.currentPlaying?.notes ?? ''
+        },
+        rerollsRemaining: Math.max(0, rerollsRemaining - 1),
         updatedAt: serverTimestamp()
       },
       { merge: true }
@@ -303,6 +368,7 @@ export class StatsService {
         history: history.slice(0, 500),
         currentPlaying,
         winStreak,
+        rerollsRemaining: winStreak.best,
         processedRunIds: Array.from(processed).slice(-2000)
       });
 
@@ -371,6 +437,7 @@ export class StatsService {
         history: history.slice(0, 500),
         currentPlaying,
         winStreak,
+        rerollsRemaining: winStreak.best,
         processedRunIds: Array.from(processed).slice(-2000),
         updatedAt: serverTimestamp(),
         createdAt: existing?.createdAt ?? serverTimestamp()
@@ -441,5 +508,45 @@ export class StatsService {
       received: events.length,
       ...imported
     };
+  }
+
+  async getGlobalRankings(): Promise<UserRanking[]> {
+    if (!this.firestore) {
+      return [];
+    }
+
+    const ref = collection(this.firestore, 'userStats');
+    const snapshot = await getDocs(ref);
+    
+    const rankings: UserRanking[] = snapshot.docs
+      .map((doc) => {
+        const data = doc.data() as Partial<UserStats>;
+        const history = Array.isArray(data.history) ? data.history : [];
+        const winStreak = normalizeWinStreak(data.winStreak);
+        
+        const wins = history.filter((h) => h.result === 'win').length;
+        const losses = history.filter((h) => h.result === 'loss').length;
+        const total = wins + losses;
+        const winRate = total > 0 ? (wins / total) * 100 : 0;
+
+        return {
+          uid: doc.id,
+          displayName: data.displayName || 'Jogador Anônimo',
+          wins,
+          losses,
+          winRate,
+          bestStreak: winStreak.best,
+          currentStreak: winStreak.current
+        };
+      })
+      .sort((a, b) => {
+        // Sort by win rate first, then by best streak
+        if (Math.abs(a.winRate - b.winRate) > 0.01) {
+          return b.winRate - a.winRate;
+        }
+        return b.bestStreak - a.bestStreak;
+      });
+
+    return rankings;
   }
 }

@@ -28,6 +28,12 @@
   padding: 0.9rem !important;
 }
 
+@media (max-width: 768px) {
+  .dashboard-wrap .card-body {
+    padding: 1rem !important;
+  }
+}
+
 .dashboard-wrap .card {
   background: var(--dash-bg-accent);
   border: 1px solid var(--dash-border-subtle) !important;
@@ -49,7 +55,7 @@
 }
 
 .metric {
-  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-size: clamp(1.5rem, 4vw, 3.2rem);
   font-weight: 800;
   color: var(--dash-gold);
   line-height: 1;
@@ -82,13 +88,38 @@
   line-height: 1.2;
 }
 
+@media (max-width: 768px) {
+  .mini-stats {
+    gap: 0.8rem;
+  }
+
+  .mini-stat-card {
+    padding: 0.7rem 0.8rem;
+  }
+
+  .mini-stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.02em;
+  }
+
+  .mini-stat-value {
+    font-size: 0.9rem;
+  }
+}
+
 .mini-stat-value--streak {
   color: var(--dash-gold);
 }
 
 .rng-box {
   border: 1px solid var(--dash-border-subtle);
-  border-radius: 12px;
+ 
+
+@media (max-width: 768px) {
+  .deck-stake-row {
+    gap: 0.7rem;
+  }
+} border-radius: 12px;
   padding: 0.9rem;
   background: var(--dash-bg-primary);
 }
@@ -125,8 +156,8 @@
 }
 
 .deck-hero-icon {
-  width: clamp(72px, 16vw, 112px);
-  height: clamp(72px, 16vw, 112px);
+  width: clamp(60px, 14vw, 112px);
+  height: clamp(60px, 14vw, 112px);
   object-fit: contain;
   flex: 0 0 auto;
 }
@@ -139,5 +170,23 @@
 
   .mini-stats {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-wrap .row {
+    flex: initial;
+  }
+
+  .dashboard-wrap .card {
+    margin-bottom: 0.8rem;
+  }
+
+  .mini-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ranking-scroll {
+    max-height: clamp(150px, 30vh, 40vh);
   }
 }

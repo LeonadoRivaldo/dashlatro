@@ -114,6 +114,7 @@ export class DashboardPage {
 
   readonly winStreakCurrent = computed(() => this.stats()?.winStreak.current ?? 0);
   readonly winStreakBest = computed(() => this.stats()?.winStreak.best ?? 0);
+  readonly rerollsRemaining = computed(() => this.stats()?.rerollsRemaining ?? 0);
 
   readonly mostPlayed = computed(() => this.rankingAll()[0] ?? null);
   readonly hasCurrentPlaying = computed(() => !!this.activeDeck() && !!this.activeStake());
@@ -199,6 +200,7 @@ export class DashboardPage {
 
   async registerResult(result: MatchResult): Promise<void> {
     const uid = this.user()?.uid;
+    const displayName = this.user()?.displayName || undefined;
     const currentDeck = this.activeDeck();
     const currentStake = this.activeStake();
     if (!uid || !currentDeck || !currentStake) {
@@ -208,12 +210,33 @@ export class DashboardPage {
     this.errorMessage.set('');
     this.isBusy.set(true);
     try {
-      await this.statsService.recordResult(uid, currentDeck, currentStake, result);
+      await this.statsService.recordResult(uid, currentDeck, currentStake, result, displayName);
       await this.statsService.clearCurrentPlaying(uid);
       this.activeDeck.set('');
       this.activeStake.set(null);
     } catch {
       this.errorMessage.set('Nao foi possivel registrar a partida.');
+    } finally {
+      this.isBusy.set(false);
+    }
+  }
+
+  async rerollRun(): Promise<void> {
+    if (!this.hasCurrentPlaying() || this.isBusy()) {
+      return;
+    }
+
+    const uid = this.user()?.uid;
+    if (!uid) {
+      return;
+    }
+
+    this.errorMessage.set('');
+    this.isBusy.set(true);
+    try {
+      await this.statsService.rerollCurrentPlaying(uid, this.deckOptions, this.stakeOptions);
+    } catch {
+      this.errorMessage.set('Nao foi possivel fazer reroll.');
     } finally {
       this.isBusy.set(false);
     }

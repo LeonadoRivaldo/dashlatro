@@ -3,6 +3,8 @@ import { Component, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from './auth.service';
+import { StatsService } from './stats.service';
+import { UserRanking } from './stats.model';
 
 @Component({
   selector: 'app-login-page',
@@ -13,9 +15,12 @@ import { AuthService } from './auth.service';
 export class LoginPage {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly statsService = inject(StatsService);
 
   readonly isAuthenticated = this.authService.isAuthenticated;
   readonly errorMessage = signal('');
+  readonly rankings = signal<UserRanking[]>([]);
+  readonly isLoadingRankings = signal(false);
 
   constructor() {
     effect(() => {
@@ -23,6 +28,8 @@ export class LoginPage {
         this.router.navigateByUrl('/');
       }
     });
+    
+    this.loadRankings();
   }
 
   async signIn(): Promise<void> {
@@ -46,6 +53,18 @@ export class LoginPage {
       } else {
         this.errorMessage.set('Nao foi possivel autenticar com Google.');
       }
+    }
+  }
+
+  private async loadRankings(): Promise<void> {
+    try {
+      this.isLoadingRankings.set(true);
+      const data = await this.statsService.getGlobalRankings();
+      this.rankings.set(data.slice(0, 10)); // Top 10
+    } catch (error) {
+      console.error('Erro ao carregar rankings:', error);
+    } finally {
+      this.isLoadingRankings.set(false);
     }
   }
 }

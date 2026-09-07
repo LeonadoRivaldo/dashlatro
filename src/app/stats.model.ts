@@ -24,7 +24,19 @@ export interface UserStats {
   history: MatchEntry[];
   currentPlaying: CurrentPlaying;
   winStreak: WinStreak;
+  rerollsRemaining: number;
+  displayName?: string;
   processedRunIds?: string[];
   updatedAt?: unknown;
   createdAt?: unknown;
+}
+
+export interface UserRanking {
+  uid: string;
+  displayName: string;
+  wins: number;
+  losses: number;
+  winRate: number;
+  bestStreak: number;
+  currentStreak: number;
 }

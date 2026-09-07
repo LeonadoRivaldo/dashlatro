@@ -91,10 +91,13 @@
               }
             </div>
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
               @if (hasCurrentPlaying()) {
                 <app-button variant="success" [disabled]="isBusy()" (click)="registerResult('win')">{{ 'DASHBOARD.CURRENT.WIN' | translate }}</app-button>
                 <app-button variant="danger" [disabled]="isBusy()" (click)="registerResult('loss')">{{ 'DASHBOARD.CURRENT.LOSS' | translate }}</app-button>
+                @if (rerollsRemaining() > 0) {
+                  <app-button variant="neutral" size="sm" [disabled]="isBusy()" (click)="rerollRun()">Reroll ({{ rerollsRemaining() }})</app-button>
+                }
               } @else {
                 <app-button variant="primary" [disabled]="isBusy()" (click)="drawRandomRun()">{{ 'DASHBOARD.RANDOMIZER.DRAW' | translate }}</app-button>
               }
