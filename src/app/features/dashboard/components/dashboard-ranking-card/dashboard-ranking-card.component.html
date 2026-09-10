@@ -1,0 +1,61 @@
+<section class="card shadow-sm border-0 h-100">
+  <div class="card-body p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0 text-dark">{{ 'DASHBOARD.RANKING.TITLE' | translate }}</h2>
+      <span class="badge text-bg-secondary">{{ 'DASHBOARD.RANKING.TOP' | translate }}</span>
+    </div>
+
+    @if (ranking().length) {
+      <div class="table-responsive ranking-scroll">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{{ 'DASHBOARD.RANKING.DECK' | translate }}</th>
+              <th>{{ 'DASHBOARD.RANKING.STAKE' | translate }}</th>
+              <th>WR</th>
+              <th>W-L</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of ranking(); track $index) {
+              <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>
+                  <img
+                    class="deck-icon"
+                    [src]="deckImage(item.deck)"
+                    [alt]="item.deck"
+                    width="20"
+                    height="20"
+                  />
+                  <span class="ms-2">{{ item.deck }}</span>
+                </td>
+                <td>
+                  <img
+                    class="stake-icon"
+                    [src]="stakeImage(item.stake)"
+                    [alt]="stakeLabel(item.stake)"
+                    width="20"
+                    height="20"
+                  />
+                  <span class="ms-2">{{ stakeLabel(item.stake) }}</span>
+                </td>
+                <td>{{ item.ratio * 100 | number:'1.0-0' }}%</td>
+                <td>{{ item.wins }}-{{ item.losses }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (hasMoreRanking()) {
+        <div class="mt-3 d-flex justify-content-center">
+          <app-button [label]="showAllRanking() ? 'Show less' : 'See all'" variant="neutral" size="sm" (click)="toggleRankingView()" />
+        </div>
+      }
+    } @else {
+      <p class="mb-0 text-secondary">{{ 'DASHBOARD.RANKING.EMPTY' | translate }}</p>
+    }
+  </div>
+</section>

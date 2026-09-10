@@ -1,0 +1,119 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.card {
+  background: var(--dash-bg-accent);
+  border: 1px solid var(--dash-border-subtle) !important;
+  box-shadow: none !important;
+}
+
+.card-body {
+  padding: 0.9rem !important;
+}
+
+.badge {
+  border: 1px solid var(--dash-border-subtle);
+  background: var(--dash-bg-primary);
+  color: var(--dash-text);
+}
+
+.text-dark {
+  color: var(--dash-text) !important;
+}
+
+.text-secondary {
+  color: var(--dash-text-muted) !important;
+}
+
+.rng-box {
+  border: 1px solid var(--dash-border-subtle);
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: var(--dash-bg-primary);
+}
+
+.stake-icon {
+  object-fit: contain;
+  vertical-align: text-bottom;
+}
+
+.deck-stake-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.deck-hero-icon {
+  width: clamp(60px, 14vw, 112px);
+  height: clamp(60px, 14vw, 112px);
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.manual-picker {
+  width: 100%;
+}
+
+.manual-sliders {
+  border-top: 1px solid var(--dash-border-subtle);
+  padding-top: 0.75rem;
+}
+
+.carousel-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.carousel-arrow {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--dash-border-subtle);
+  background: var(--dash-bg-accent);
+  color: var(--dash-text);
+  font-size: 1.1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.carousel-arrow:hover:not(:disabled) {
+  background: var(--dash-bg-primary);
+  border-color: color-mix(in srgb, var(--dash-border-subtle) 60%, var(--dash-text) 40%);
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.carousel-value {
+  min-width: 150px;
+}
+
+.stake-carousel-value {
+  min-width: 150px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem !important;
+  }
+
+  .deck-stake-row {
+    gap: 0.7rem;
+  }
+
+  .carousel-value,
+  .stake-carousel-value {
+    min-width: 120px;
+  }
+}

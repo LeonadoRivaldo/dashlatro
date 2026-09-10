@@ -1,0 +1,48 @@
+<section class="card shadow-sm border-0 h-100">
+  <div class="card-body p-4">
+    @if (errorMessage()) {
+      <div class="alert alert-warning mb-3" role="alert">{{ errorMessage() }}</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0 text-dark">{{ 'DASHBOARD.WIN_RATE.TITLE' | translate }}</h2>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge text-bg-secondary">{{ totalRuns() }} {{ 'DASHBOARD.RUNS' | translate }}</span>
+        <app-button label="Reset" variant="danger" size="xs" [lowEmphasis]="true" [disabled]="isBusy()" (click)="resetStats()" />
+      </div>
+    </div>
+
+    <div class="metric mb-2">{{ winRate() | number:'1.0-1' }}%</div>
+    <div class="mini-stats mb-3">
+      <article class="mini-stat-card">
+        <p class="mini-stat-label mb-1">Wins</p>
+        <p class="mini-stat-value mb-0">{{ wins() }}</p>
+      </article>
+      <article class="mini-stat-card">
+        <p class="mini-stat-label mb-1">Losses</p>
+        <p class="mini-stat-value mb-0">{{ losses() }}</p>
+      </article>
+      <article class="mini-stat-card">
+        <p class="mini-stat-label mb-1">Win streak (best)</p>
+        <p class="mini-stat-value mini-stat-value--streak mb-0">{{ winStreakCurrent() }} ({{ winStreakBest() }})</p>
+      </article>
+    </div>
+
+    @if (mostPlayed()) {
+      <p class="mb-0 text-dark d-flex align-items-center flex-wrap gap-1">
+        <span>{{ 'DASHBOARD.WIN_RATE.MOST_PLAYED' | translate }}:</span>
+        <img
+          class="deck-icon"
+          [src]="deckImage(mostPlayed()!.deck)"
+          [alt]="mostPlayed()!.deck"
+          width="20"
+          height="20"
+        />
+        <strong>{{ mostPlayed()!.deck }}</strong>
+        <span>/ {{ stakeLabel(mostPlayed()!.stake) }}</span>
+      </p>
+    } @else {
+      <p class="mb-0 text-secondary">{{ 'DASHBOARD.WIN_RATE.EMPTY' | translate }}</p>
+    }
+  </div>
+</section>

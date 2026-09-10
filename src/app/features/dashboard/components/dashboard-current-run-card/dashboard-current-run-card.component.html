@@ -1,0 +1,91 @@
+<section class="card shadow-sm border-0 h-100">
+  <div class="card-body p-4">
+    @if (errorMessage()) {
+      <div class="alert alert-warning mb-3" role="alert">{{ errorMessage() }}</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0 text-dark">{{ hasCurrentPlaying() ? ('DASHBOARD.CURRENT.TITLE' | translate) : ('DASHBOARD.RANDOMIZER.TITLE' | translate) }}</h2>
+      @if (!hasCurrentPlaying()) {
+        <span class="badge text-bg-secondary">RNG</span>
+      }
+    </div>
+
+    <div class="rng-box mb-3">
+      <p class="mb-1 text-secondary">{{ hasCurrentPlaying() ? ('DASHBOARD.CURRENT.CURRENT_DECK' | translate) : ('DASHBOARD.RANDOMIZER.DRAWN_DECK' | translate) }}</p>
+      @if (hasCurrentPlaying()) {
+        <div class="deck-stake-row">
+          <img
+            class="deck-hero-icon"
+            [src]="deckImage(activeDeck())"
+            [alt]="activeDeck()"
+          />
+          <div>
+            <h3 class="h4 mb-1 text-dark">{{ activeDeck() }}</h3>
+            <p class="mb-0 text-secondary d-flex align-items-center">
+              <img
+                class="stake-icon"
+                [src]="stakeImage(activeStake()!)"
+                [alt]="stakeLabel(activeStake()!)"
+                width="20"
+                height="20"
+              />
+              <span class="ms-2">{{ stakeLabel(activeStake()!) }}</span>
+            </p>
+          </div>
+        </div>
+      } @else if (manualRun()) {
+        <div class="manual-picker">
+          <div class="deck-stake-row">
+            <button class="carousel-arrow" type="button" [disabled]="isBusy()" (click)="previousDeck()" aria-label="Previous deck">&#10094;</button>
+            <img
+              class="deck-hero-icon"
+              [src]="deckImage(selectedDeck())"
+              [alt]="selectedDeck()"
+            />
+            <div>
+              <h3 class="h4 mb-1 text-dark">{{ selectedDeck() }}</h3>
+              <p class="mb-0 text-secondary d-flex align-items-center">
+                <button class="carousel-arrow me-2" type="button" [disabled]="isBusy()" (click)="previousStake()" aria-label="Previous stake">&#10094;</button>
+                <img
+                  class="stake-icon"
+                  [src]="stakeImage(selectedStake())"
+                  [alt]="stakeLabel(selectedStake())"
+                  width="20"
+                  height="20"
+                />
+                <span class="ms-2">{{ stakeLabel(selectedStake()) }}</span>
+                <button class="ms-2 carousel-arrow" type="button" [disabled]="isBusy()" (click)="nextStake()" aria-label="Next stake">&#10095;</button>
+              </p>
+            </div>
+            <button class="carousel-arrow" type="button" [disabled]="isBusy()" (click)="nextDeck()" aria-label="Next deck">&#10095;</button>
+          </div>
+        </div>
+      } @else {
+        <h3 class="h6 mb-0 text-secondary">{{ 'DASHBOARD.CURRENT.EMPTY' | translate }}</h3>
+      }
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      @if (hasCurrentPlaying()) {
+        <app-button label="DASHBOARD.CURRENT.WIN" variant="primary" [disabled]="isBusy()" (click)="registerResult('win')" />
+        <app-button label="DASHBOARD.CURRENT.LOSS" variant="danger" [disabled]="isBusy()" (click)="registerResult('loss')" />
+      } @else if (manualRun()) {
+        <app-button label="Start Manual Run" variant="primary" [disabled]="isBusy()" (click)="startManualRun()" />
+      } @else {
+        <app-button label="DASHBOARD.RANDOMIZER.DRAW" variant="primary" [disabled]="isBusy()" (click)="drawRandomRun()" />
+      }
+      
+      @if (!manualRun()) {
+        <app-toggle-button label="Auto Draw" [(state)]="autoDraw"></app-toggle-button>
+      }
+      
+      <app-toggle-button [states]="runModeStates" [(state)]="manualRun"></app-toggle-button>
+      
+      @if (hasCurrentPlaying() && rerollsRemaining() > 0) {
+        <app-button [label]="'Reroll (' + rerollsRemaining() + ')'" variant="neutral" size="sm" [disabled]="isBusy()" (click)="rerollRun()" />
+      }
+      
+    </div>
+  </div>
+</section>
