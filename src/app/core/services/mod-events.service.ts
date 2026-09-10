@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ModRunEvent, ParsedModDump } from './mod-events.model';
-import { normalizeStake } from './stake.utils';
+import { ModRunEvent, ParsedModDump } from '../models/mod-events.model';
+import { normalizeStake } from '../../utils/stake.utils';
 
 @Injectable({ providedIn: 'root' })
 export class ModEventsService {

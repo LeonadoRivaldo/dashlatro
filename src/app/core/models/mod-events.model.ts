@@ -1,5 +1,5 @@
 import { MatchResult } from './stats.model';
-import { StakeKey } from './stake.utils';
+import { StakeKey } from '../../utils/stake.utils';
 
 export type ModEventType = 'run_started' | 'run_finished';
 

@@ -3,17 +3,24 @@ import {
   Firestore,
   collection,
   deleteDoc,
-  getDocs,
   doc,
   docData,
   getDoc,
+  getDocs,
   serverTimestamp,
   setDoc
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, map } from 'rxjs';
-import { CurrentPlaying, MatchEntry, MatchResult, UserStats, UserRanking, WinStreak } from './stats.model';
-import { ModImportResult, ModRunEvent } from './mod-events.model';
-import { normalizeStake } from './stake.utils';
+import { ModImportResult, ModRunEvent } from '../models/mod-events.model';
+import { UserRanking } from '../models/user.model';
+import {
+  CurrentPlaying,
+  MatchEntry,
+  MatchResult,
+  UserStats,
+  WinStreak
+} from '../models/stats.model';
+import { normalizeStake } from '../../utils/stake.utils';
 
 const DEFAULT_CURRENT_PLAYING: CurrentPlaying = {
   deck: '',
@@ -22,6 +29,7 @@ const DEFAULT_CURRENT_PLAYING: CurrentPlaying = {
 };
 
 const DEFAULT_STATS: UserStats = {
+  userId: '',
   history: [],
   currentPlaying: DEFAULT_CURRENT_PLAYING,
   winStreak: {
@@ -75,6 +83,7 @@ export class StatsService {
     }
 
     const created = new BehaviorSubject<UserStats>({
+      userId: uid,
       history: [],
       currentPlaying: { ...DEFAULT_CURRENT_PLAYING },
       winStreak: { ...DEFAULT_WIN_STREAK },
@@ -93,15 +102,23 @@ export class StatsService {
     return docData(ref).pipe(
       map((value) => {
         if (!value) {
-          return DEFAULT_STATS;
+          return {
+            ...DEFAULT_STATS,
+            userId: uid
+          };
         }
 
         const data = value as Partial<UserStats>;
         const currentStake = data.currentPlaying?.stake;
         const normalizedWinStreak = normalizeWinStreak(data.winStreak);
         const rerollsRaw = Number(data.rerollsRemaining);
-        const rerollsRemaining = Number.isFinite(rerollsRaw) && rerollsRaw >= 0 ? Math.floor(rerollsRaw) : normalizedWinStreak.best;
+        const rerollsRemaining =
+          Number.isFinite(rerollsRaw) && rerollsRaw >= 0
+            ? Math.floor(rerollsRaw)
+            : normalizedWinStreak.best;
+
         return {
+          userId: data.userId ?? uid,
           history: Array.isArray(data.history)
             ? data.history
                 .filter((entry): entry is MatchEntry => !!entry && typeof entry.deck === 'string')
@@ -130,11 +147,55 @@ export class StatsService {
     );
   }
 
-  async updateCurrentPlaying(uid: string, payload: CurrentPlaying, displayName?: string): Promise<void> {
+  async ensureUserStats(uid: string): Promise<void> {
+    if (!this.firestore) {
+      const subject = this.getLocalSubject(uid);
+      if (subject.value.userId !== uid) {
+        subject.next({
+          ...subject.value,
+          userId: uid
+        });
+      }
+      return;
+    }
+
+    const ref = doc(this.firestore, 'userStats', uid);
+    const snapshot = await getDoc(ref);
+
+    if (!snapshot.exists()) {
+      await setDoc(
+        ref,
+        {
+          userId: uid,
+          history: [],
+          currentPlaying: { ...DEFAULT_CURRENT_PLAYING },
+          winStreak: { ...DEFAULT_WIN_STREAK },
+          rerollsRemaining: 0,
+          processedRunIds: [],
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
+      return;
+    }
+
+    await setDoc(
+      ref,
+      {
+        userId: uid,
+        updatedAt: serverTimestamp()
+      },
+      { merge: true }
+    );
+  }
+
+  async updateCurrentPlaying(uid: string, payload: CurrentPlaying): Promise<void> {
     if (!this.firestore) {
       const subject = this.getLocalSubject(uid);
       subject.next({
         ...subject.value,
+        userId: uid,
         currentPlaying: payload
       });
       return;
@@ -142,15 +203,12 @@ export class StatsService {
 
     const ref = doc(this.firestore, 'userStats', uid);
     const data: Record<string, unknown> = {
+      userId: uid,
       currentPlaying: payload,
       updatedAt: serverTimestamp(),
       createdAt: serverTimestamp()
     };
-    
-    if (displayName) {
-      data['displayName'] = displayName;
-    }
-    
+
     await setDoc(ref, data, { merge: true });
   }
 
@@ -158,8 +216,7 @@ export class StatsService {
     uid: string,
     deck: string,
     stake: MatchEntry['stake'],
-    result: MatchResult,
-    displayName?: string
+    result: MatchResult
   ): Promise<void> {
     if (!this.firestore) {
       const subject = this.getLocalSubject(uid);
@@ -169,13 +226,11 @@ export class StatsService {
         result,
         playedAt: new Date().toISOString()
       };
-      const nextWinStreak = getNextWinStreak(
-        normalizeWinStreak(subject.value.winStreak),
-        result
-      );
+      const nextWinStreak = getNextWinStreak(normalizeWinStreak(subject.value.winStreak), result);
 
       subject.next({
         ...subject.value,
+        userId: uid,
         history: [nextEntry, ...subject.value.history].slice(0, 500),
         winStreak: nextWinStreak,
         rerollsRemaining: nextWinStreak.best
@@ -200,19 +255,15 @@ export class StatsService {
     const nextWinStreak = getNextWinStreak(existingWinStreak, result);
 
     const data: Record<string, unknown> = {
+      userId: uid,
       history: nextHistory,
       winStreak: nextWinStreak,
       rerollsRemaining: nextWinStreak.best,
       updatedAt: serverTimestamp(),
       createdAt: existing?.createdAt ?? serverTimestamp()
     };
-    
-    if (displayName) {
-      data['displayName'] = displayName;
-    }
 
-    await setDoc(ref, data, { merge: true }
-    );
+    await setDoc(ref, data, { merge: true });
   }
 
   async clearCurrentPlaying(uid: string): Promise<void> {
@@ -226,6 +277,7 @@ export class StatsService {
       const subject = this.getLocalSubject(uid);
       subject.next({
         ...subject.value,
+        userId: uid,
         currentPlaying: cleared
       });
       return;
@@ -235,6 +287,7 @@ export class StatsService {
     await setDoc(
       ref,
       {
+        userId: uid,
         currentPlaying: cleared,
         updatedAt: serverTimestamp()
       },
@@ -246,6 +299,7 @@ export class StatsService {
     if (!this.firestore) {
       const subject = this.getLocalSubject(uid);
       subject.next({
+        userId: uid,
         history: [],
         currentPlaying: { ...DEFAULT_CURRENT_PLAYING },
         winStreak: { ...DEFAULT_WIN_STREAK },
@@ -259,6 +313,7 @@ export class StatsService {
     await setDoc(
       ref,
       {
+        userId: uid,
         history: [],
         currentPlaying: { ...DEFAULT_CURRENT_PLAYING },
         winStreak: { ...DEFAULT_WIN_STREAK },
@@ -282,6 +337,7 @@ export class StatsService {
 
       subject.next({
         ...subject.value,
+        userId: uid,
         currentPlaying: {
           deck: nextDeck,
           stake: normalizeStake(nextStake),
@@ -307,6 +363,7 @@ export class StatsService {
     await setDoc(
       ref,
       {
+        userId: uid,
         currentPlaying: {
           deck: nextDeck,
           stake: normalizeStake(nextStake),
@@ -365,6 +422,7 @@ export class StatsService {
 
       subject.next({
         ...subject.value,
+        userId: uid,
         history: history.slice(0, 500),
         currentPlaying,
         winStreak,
@@ -434,6 +492,7 @@ export class StatsService {
     await setDoc(
       ref,
       {
+        userId: uid,
         history: history.slice(0, 500),
         currentPlaying,
         winStreak,
@@ -515,23 +574,44 @@ export class StatsService {
       return [];
     }
 
-    const ref = collection(this.firestore, 'userStats');
-    const snapshot = await getDocs(ref);
-    
-    const rankings: UserRanking[] = snapshot.docs
-      .map((doc) => {
-        const data = doc.data() as Partial<UserStats>;
+    const statsRef = collection(this.firestore, 'userStats');
+    const usersRef = collection(this.firestore, 'users');
+    const [statsSnapshot, usersSnapshot] = await Promise.all([getDocs(statsRef), getDocs(usersRef)]);
+
+    const usersById = new Map(
+      usersSnapshot.docs.map((item) => {
+        const data = item.data() as {
+          userId?: unknown;
+          displayName?: unknown;
+          email?: unknown;
+          photoUrl?: unknown;
+        };
+        const userId = typeof data.userId === 'string' && data.userId ? data.userId : item.id;
+        const displayName = typeof data.displayName === 'string' && data.displayName ? data.displayName : 'Anonymous Player';
+        const email = typeof data.email === 'string' ? data.email : null;
+        const photoUrl = typeof data.photoUrl === 'string' ? data.photoUrl : null;
+        return [userId, { userId, displayName, email, photoUrl }];
+      })
+    );
+
+    const rankings: UserRanking[] = statsSnapshot.docs
+      .map((item) => {
+        const data = item.data() as Partial<UserStats>;
+        const userId = data.userId ?? item.id;
+        const profile = usersById.get(userId);
         const history = Array.isArray(data.history) ? data.history : [];
         const winStreak = normalizeWinStreak(data.winStreak);
-        
-        const wins = history.filter((h) => h.result === 'win').length;
-        const losses = history.filter((h) => h.result === 'loss').length;
+
+        const wins = history.filter((entry) => entry.result === 'win').length;
+        const losses = history.filter((entry) => entry.result === 'loss').length;
         const total = wins + losses;
         const winRate = total > 0 ? (wins / total) * 100 : 0;
 
         return {
-          uid: doc.id,
-          displayName: data.displayName || 'Jogador Anônimo',
+          userId,
+          displayName: profile?.displayName ?? 'Anonymous Player',
+          email: profile?.email ?? null,
+          photoUrl: profile?.photoUrl ?? null,
           wins,
           losses,
           winRate,
@@ -540,7 +620,6 @@ export class StatsService {
         };
       })
       .sort((a, b) => {
-        // Sort by win rate first, then by best streak
         if (Math.abs(a.winRate - b.winRate) > 0.01) {
           return b.winRate - a.winRate;
         }

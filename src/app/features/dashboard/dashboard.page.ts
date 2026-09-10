@@ -1,14 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { TranslatePipe } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { of, switchMap } from 'rxjs';
-import { AuthService } from './auth.service';
-import { MatchResult } from './stats.model';
-import { StatsService } from './stats.service';
-import { STAKE_ORDER, StakeKey, stakeToImage, stakeToLabel, stakeWeight } from './stake.utils';
-import { AppButtonComponent } from './shared/components/app-button.component';
+import { AuthService } from '../../core/services/auth.service';
+import { MatchResult } from '../../core/models/stats.model';
+import { StatsService } from '../../core/services/stats.service';
+import {
+  STAKE_ORDER,
+  StakeKey,
+  stakeToImage,
+  stakeToLabel,
+  stakeWeight
+} from '../../utils/stake.utils';
+import { AppButtonComponent } from '../../shared/components/app-button.component';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -103,7 +109,10 @@ export class DashboardPage {
         total: combo.wins + combo.losses,
         ratio: combo.wins + combo.losses ? combo.wins / (combo.wins + combo.losses) : 0
       }))
-      .sort((a, b) => b.ratio - a.ratio || b.total - a.total || stakeWeight(b.stake) - stakeWeight(a.stake));
+      .sort(
+        (a, b) =>
+          b.ratio - a.ratio || b.total - a.total || stakeWeight(b.stake) - stakeWeight(a.stake)
+      );
   });
 
   readonly ranking = computed(() =>
@@ -184,11 +193,14 @@ export class DashboardPage {
     this.errorMessage.set('');
     this.isBusy.set(true);
     try {
-      await this.statsService.updateCurrentPlaying(uid, {
-        deck: nextDeck,
-        stake: nextStake,
-        notes: ''
-      });
+      await this.statsService.updateCurrentPlaying(
+        uid,
+        {
+          deck: nextDeck,
+          stake: nextStake,
+          notes: ''
+        }
+      );
       this.activeDeck.set(nextDeck);
       this.activeStake.set(nextStake);
     } catch {
@@ -200,7 +212,6 @@ export class DashboardPage {
 
   async registerResult(result: MatchResult): Promise<void> {
     const uid = this.user()?.uid;
-    const displayName = this.user()?.displayName || undefined;
     const currentDeck = this.activeDeck();
     const currentStake = this.activeStake();
     if (!uid || !currentDeck || !currentStake) {
@@ -210,7 +221,7 @@ export class DashboardPage {
     this.errorMessage.set('');
     this.isBusy.set(true);
     try {
-      await this.statsService.recordResult(uid, currentDeck, currentStake, result, displayName);
+      await this.statsService.recordResult(uid, currentDeck, currentStake, result);
       await this.statsService.clearCurrentPlaying(uid);
       this.activeDeck.set('');
       this.activeStake.set(null);

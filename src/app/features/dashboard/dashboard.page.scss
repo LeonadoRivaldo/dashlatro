@@ -113,13 +113,7 @@
 
 .rng-box {
   border: 1px solid var(--dash-border-subtle);
- 
-
-@media (max-width: 768px) {
-  .deck-stake-row {
-    gap: 0.7rem;
-  }
-} border-radius: 12px;
+  border-radius: 12px;
   padding: 0.9rem;
   background: var(--dash-bg-primary);
 }
@@ -138,6 +132,12 @@
   display: flex;
   align-items: center;
   gap: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .deck-stake-row {
+    gap: 0.7rem;
+  }
 }
 
 .ranking-scroll {

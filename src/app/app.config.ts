@@ -7,7 +7,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader, TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { routes } from './app.routes';
+import { routes } from './features/feature.routes';
 import { environment } from '../environments/environment';
 
 const hasFirebaseConfig =

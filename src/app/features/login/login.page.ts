@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { AuthService } from './auth.service';
-import { StatsService } from './stats.service';
-import { UserRanking } from './stats.model';
+import { UserRanking } from '../../core/models/user.model';
+import { AuthService } from '../../core/services/auth.service';
+import { StatsService } from '../../core/services/stats.service';
 
 @Component({
   selector: 'app-login-page',
@@ -28,8 +28,8 @@ export class LoginPage {
         this.router.navigateByUrl('/');
       }
     });
-    
-    this.loadRankings();
+
+    void this.loadRankings();
   }
 
   async signIn(): Promise<void> {
@@ -60,9 +60,9 @@ export class LoginPage {
     try {
       this.isLoadingRankings.set(true);
       const data = await this.statsService.getGlobalRankings();
-      this.rankings.set(data.slice(0, 10)); // Top 10
-    } catch (error) {
-      console.error('Erro ao carregar rankings:', error);
+      this.rankings.set(data.slice(0, 10));
+    } catch {
+      this.rankings.set([]);
     } finally {
       this.isLoadingRankings.set(false);
     }

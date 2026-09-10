@@ -1,4 +1,4 @@
-import { StakeKey } from './stake.utils';
+import { StakeKey } from '../../utils/stake.utils';
 
 export type MatchResult = 'win' | 'loss';
 
@@ -21,22 +21,12 @@ export interface WinStreak {
 }
 
 export interface UserStats {
+  userId: string;
   history: MatchEntry[];
   currentPlaying: CurrentPlaying;
   winStreak: WinStreak;
   rerollsRemaining: number;
-  displayName?: string;
   processedRunIds?: string[];
   updatedAt?: unknown;
   createdAt?: unknown;
-}
-
-export interface UserRanking {
-  uid: string;
-  displayName: string;
-  wins: number;
-  losses: number;
-  winRate: number;
-  bestStreak: number;
-  currentStreak: number;
 }

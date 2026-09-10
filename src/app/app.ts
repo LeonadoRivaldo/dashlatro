@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { AuthService } from './auth.service';
+import { AuthService } from './core/services/auth.service';
 
 type LanguageCode = 'en' | 'pt-br' | 'es' | 'fr';
 
