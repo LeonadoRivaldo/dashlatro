@@ -80,7 +80,9 @@
         <app-toggle-button label="Auto Draw" [(state)]="autoDraw"></app-toggle-button>
       }
       
-      <app-toggle-button [states]="runModeStates" [(state)]="manualRun"></app-toggle-button>
+      @if(!hasCurrentPlaying()){
+        <app-toggle-button [states]="runModeStates" [(state)]="manualRun"></app-toggle-button>
+      }
       
       @if (hasCurrentPlaying() && rerollsRemaining() > 0) {
         <app-button [label]="'Reroll (' + rerollsRemaining() + ')'" variant="neutral" size="sm" [disabled]="isBusy()" (click)="rerollRun()" />

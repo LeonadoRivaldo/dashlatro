@@ -48,6 +48,54 @@
   border: 2px solid var(--dash-bg-primary);
 }
 
+.ranking-scroll .table {
+  background: transparent;
+  font-size: 0.9rem;
+}
+
+.table > :not(caption) > * > *{ background-color: transparent; }
+
+.ranking-scroll .table thead {
+  background: linear-gradient(90deg, rgba(20, 15, 40, 0.9) 0%, rgba(25, 18, 50, 0.9) 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.ranking-scroll .table thead th {
+  border-bottom: 2px solid color-mix(in srgb, var(--dash-border-subtle) 70%, var(--dash-blue) 30%);
+  color: color-mix(in srgb, var(--dash-text-subtle) 80%, var(--dash-blue) 20%);
+  font-weight: 700;
+  padding: 0.85rem 0.6rem;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+.ranking-scroll .table tbody td {
+  padding: 0.8rem 0.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--dash-border-subtle) 50%, transparent);
+  color: var(--dash-text);
+  vertical-align: middle;
+}
+
+.ranking-scroll .table tbody tr {
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+  background: transparent;
+}
+
+.ranking-scroll .table tbody tr:hover {
+  background: color-mix(in srgb, var(--dash-bg-primary) 85%, var(--dash-blue) 15%);
+  border-bottom-color: var(--dash-border-subtle);
+  box-shadow: inset 0 0 8px rgba(89, 240, 255, 0.08);
+}
+
+.ranking-scroll .table tbody tr:first-child td:first-child {
+  color: var(--dash-gold);
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
 @media (max-width: 768px) {
   .card-body {
     padding: 1rem !important;
